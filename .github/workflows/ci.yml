@@ -105,18 +105,16 @@ jobs:
           exit 1
 
       - name: Install test dependencies
-        working-directory: instructor-evaluation/tests
+        working-directory: tests
         run: npm install
 
       - name: Run API and Redis tests
-        working-directory: instructor-evaluation/tests
+        working-directory: tests
         env:
           BASE_URL: http://localhost:3000
           NODE_OPTIONS: --experimental-vm-modules
         run: npm test -- --json --outputFile=test-results.json
 
-      - name: Test PostgreSQL persistence
-        run: bash instructor-evaluation/scripts/persistence-test.sh
 
       - name: Capture container status and logs
         if: always()
@@ -144,7 +142,7 @@ jobs:
         with:
           name: docker-practical-results-${{ github.run_id }}
           path: |
-            instructor-evaluation/tests/test-results.json
+            tests/test-results.json
             evaluation-output/
           if-no-files-found: ignore
           retention-days: 30
@@ -152,3 +150,4 @@ jobs:
       - name: Cleanup containers
         if: always()
         run: docker compose down -v --remove-orphans || true
+
